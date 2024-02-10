@@ -15,3 +15,9 @@ rayon = "1.8.1"
 
 [profile.release]
 strip = "debuginfo"
+
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 3
