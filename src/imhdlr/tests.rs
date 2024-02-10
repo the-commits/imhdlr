@@ -1,5 +1,6 @@
-use super::{remove_suffix, imhdlr_get_images};
-use std::fs::{remove_dir_all, create_dir_all, File};
+use super::*;
+use std::fs::{create_dir_all, remove_dir_all, File};
+use crate::imhdlr::utils::*;
 
 #[test]
 fn it_remove_suffix() {
@@ -19,7 +20,7 @@ fn it_imhdlr_get_images() {
 fn create_dirs(dir: &str) {
     match create_dir_all(dir) {
         Err(why) => println!("! {:?}", why.kind()),
-        Ok(_) => {},
+        Ok(_) => {}
     }
 }
 
@@ -29,5 +30,9 @@ fn create_image(file_path: &str) {
 
 fn cleanup(dir: &str) {
     let result = remove_dir_all(dir);
-    assert!(result.is_ok(),"{}", format!("Directory '{}' does not exist or cannot be deleted.", dir));
+    assert!(
+        result.is_ok(),
+        "{}",
+        format!("Directory '{}' does not exist or cannot be deleted.", dir)
+    );
 }
