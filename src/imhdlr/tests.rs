@@ -1,6 +1,8 @@
 use super::*;
-use std::fs::{create_dir_all, remove_dir_all, File};
 use crate::imhdlr::utils::*;
+use std::fs::remove_file;
+use std::fs::{remove_dir_all, File};
+use std::path::Path;
 
 #[test]
 fn it_remove_suffix() {
@@ -17,11 +19,15 @@ fn it_imhdlr_get_images() {
     cleanup("tests_images");
 }
 
-fn create_dirs(dir: &str) {
-    match create_dir_all(dir) {
-        Err(why) => println!("! {:?}", why.kind()),
-        Ok(_) => {}
-    }
+#[test]
+fn it_imhdlr_resize_images() {
+    let img1 = "tests/images/dir1/annie-spratt-6wd1f4Zjo_0-unsplash-30x30.jpg";
+    let img2 = "tests/images/dir1/dir2/alex-plesovskich-MHlxTsw5aKY-unsplash-30x30.jpg";
+    remove_file(img1).unwrap();
+    remove_file(img2).unwrap();
+    imhdlr_resize_images("tests/images/", 30, 30, true, true);
+    assert!(Path::new(img1).exists(), "File {} does not exist", img1);
+    assert!(Path::new(img2).exists(), "File {} does not exist", img2);
 }
 
 fn create_image(file_path: &str) {
