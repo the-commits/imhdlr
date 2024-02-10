@@ -15,13 +15,6 @@ const FILE_EXTENSIONS: [&str; 10] = [
     ".jpg", ".jpeg", ".gif", ".png", ".avif", ".bmp", ".ico", ".tga", ".tiff", ".webp",
 ];
 
-pub fn create_dirs(dir: &str) {
-    match create_dir_all(dir) {
-        Err(why) => println!("! {:?}", why.kind()),
-        Ok(_) => {}
-    }
-}
-
 pub fn get_images(dir: &str) -> Vec<Vec<PathBuf>> {
     glob_images(remove_suffix(dir, '/').to_owned() + "/**/*")
 }
