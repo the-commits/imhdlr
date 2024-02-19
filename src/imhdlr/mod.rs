@@ -3,7 +3,7 @@ use rayon::{iter::ParallelIterator, prelude::IntoParallelIterator};
 
 mod utils;
 use crate::imhdlr::utils::{
-    get_images, process_crop, process_resize_exact, process_resize_to_fill_crop,
+    get_images, process_crop, process_resize_exact, process_resize_to_fill,
 };
 
 #[php_function]
@@ -31,16 +31,20 @@ pub fn imhdlr_resize_exact(dir: &str, resize_width: u32, resize_height: u32, ver
 pub fn imhdlr_crop(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
     for images in get_images(dir) {
         images.into_par_iter().for_each(move |image| {
-            process_crop(image, resize_width, resize_height, verbose);
+            if let Err(e) = process_crop(image, resize_width, resize_height, verbose) {
+                eprintln!("Error processing image: {:?}", e);
+            }
         });
     }
 }
 
 #[php_function]
-pub fn imhdlr_resize_to_fill_crop(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
+pub fn imhdlr_resize_to_fill(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
     for images in get_images(dir) {
         images.into_par_iter().for_each(move |image| {
-            process_resize_to_fill_crop(image, resize_width, resize_height, verbose);
+            if let Err(e) = process_resize_to_fill(image, resize_width, resize_height, verbose) {
+                eprintln!("Error processing image: {:?}", e);
+            }
         });
     }
 }
