@@ -107,7 +107,7 @@ pub fn process_crop(
     Ok(())
 }
 
-pub fn process_resize_to_fill_crop(
+pub fn process_resize_to_fill(
     image_path: PathBuf,
     new_width: u32,
     new_height: u32,
@@ -115,19 +115,14 @@ pub fn process_resize_to_fill_crop(
 ) -> io::Result<()> {
     if let Ok(reader) = ImageReader::open(&image_path) {
         if let Ok(image) = reader.decode() {
-            let mut resized_image =
+            let resized_image =
                 image.resize_to_fill(new_width, new_height, image::imageops::FilterType::Lanczos3);
-            let crop_width = new_width.min(new_width);
-            let crop_height = new_height.min(new_height);
-            let left = (new_width - crop_width) / 2;
-            let top = (new_height - crop_height) / 2;
-            let cropped_image = resized_image.crop(left, top, crop_width, crop_height);
             let output_path = image_path.with_file_name(rename_image(
                 image_path.file_name().unwrap().to_str().unwrap(),
                 new_width,
                 new_height,
             ));
-            match cropped_image.save(output_path.clone()) {
+            match resized_image.save(output_path.clone()) {
                 Ok(()) => {
                     if verbose {
                         println!("{} saved", output_path.display());
