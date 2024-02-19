@@ -437,17 +437,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fast_image_resize"
-version = "3.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcdef35678d4ac518be2135c451d81ee0b542a35aee5df162886b95c8c43ee0d"
-dependencies = [
- "cfg-if",
- "num-traits",
- "thiserror",
-]
-
-[[package]]
 name = "fastrand"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -633,11 +622,9 @@ name = "imhdlr"
 version = "0.1.0"
 dependencies = [
  "ext-php-rs",
- "fast_image_resize",
  "glob",
  "image",
  "rayon",
- "regex",
 ]
 
 [[package]]
