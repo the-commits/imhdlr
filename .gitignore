@@ -17,3 +17,8 @@ Cargo.lock
 # Application specific
 /.output/
 .idea
+
+
+# Other
+*.swp
+.DS_Store
