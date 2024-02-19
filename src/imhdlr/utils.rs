@@ -38,7 +38,7 @@ pub fn glob_images(dir: String) -> Vec<Vec<PathBuf>> {
     directories
 }
 
-pub fn process_squeeze(
+pub fn process_resize_exact(
     path: PathBuf,
     resize_width: u32,
     resize_height: u32,
@@ -79,7 +79,14 @@ pub fn process_crop(
 ) -> io::Result<()> {
     if let Ok(reader) = ImageReader::open(&path) {
         if let Ok(mut image) = reader.decode() {
-            let subimg = imageops::crop(&mut image, 0, 0, resize_width, resize_height);
+            let (width, height) = image.dimensions();
+            let subimg = imageops::crop(
+                &mut image,
+                (width - resize_width) / 2,
+                (height - resize_height) / 2,
+                resize_width.min(width),
+                resize_height.min(height),
+            ); // resize_width, resize_height);
             let output_path = path.with_file_name(rename_image(
                 path.file_name().unwrap().to_str().unwrap(),
                 resize_width,
@@ -100,7 +107,7 @@ pub fn process_crop(
     Ok(())
 }
 
-pub fn process_squeeze_and_crop(
+pub fn process_resize_to_fill_crop(
     image_path: PathBuf,
     new_width: u32,
     new_height: u32,
@@ -108,24 +115,12 @@ pub fn process_squeeze_and_crop(
 ) -> io::Result<()> {
     if let Ok(reader) = ImageReader::open(&image_path) {
         if let Ok(image) = reader.decode() {
-            let (width, height) = image.dimensions();
-            let scale_factor = if width < height {
-                new_width as f32 / width as f32
-            } else {
-                new_height as f32 / height as f32
-            };
-
-            let resized_width = (width as f32 * scale_factor) as u32;
-            let resized_height = (height as f32 * scale_factor) as u32;
-            let mut resized_image = image.resize_exact(
-                resized_width,
-                resized_height,
-                image::imageops::FilterType::Lanczos3,
-            );
-            let crop_width = new_width.min(resized_width);
-            let crop_height = new_height.min(resized_height);
-            let left = (resized_width - crop_width) / 2;
-            let top = (resized_height - crop_height) / 2;
+            let mut resized_image =
+                image.resize_to_fill(new_width, new_height, image::imageops::FilterType::Lanczos3);
+            let crop_width = new_width.min(new_width);
+            let crop_height = new_height.min(new_height);
+            let left = (new_width - crop_width) / 2;
+            let top = (new_height - crop_height) / 2;
             let cropped_image = resized_image.crop(left, top, crop_width, crop_height);
             let output_path = image_path.with_file_name(rename_image(
                 image_path.file_name().unwrap().to_str().unwrap(),
