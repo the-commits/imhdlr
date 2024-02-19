@@ -35,8 +35,9 @@ fn it_imhdlr_crop() {
 
 #[test]
 fn it_imhdlr_resize_exact() {
-    let img1 = "tests/images/dir1/annie-spratt-6wd1f4Zjo_0-unsplash-400x400.jpg";
-    let img2 = "tests/images/dir1/dir2/alex-plesovskich-MHlxTsw5aKY-unsplash-400x400.jpg";
+    let img1 = "tests/images/dir1/annie-spratt-6wd1f4Zjo_0-unsplash-resize_exact-400x400.jpg";
+    let img2 =
+        "tests/images/dir1/dir2/alex-plesovskich-MHlxTsw5aKY-unsplash-resize_exact-400x400.jpg";
     if file_exists(img1) {
         remove_file(img1).unwrap();
     }
@@ -50,8 +51,9 @@ fn it_imhdlr_resize_exact() {
 
 #[test]
 fn it_imhdlr_resize_to_fill() {
-    let img1 = "tests/images/dir1/annie-spratt-6wd1f4Zjo_0-unsplash-crop-400x400.jpg";
-    let img2 = "tests/images/dir1/dir2/alex-plesovskich-MHlxTsw5aKY-unsplash-crop-400x400.jpg";
+    let img1 = "tests/images/dir1/annie-spratt-6wd1f4Zjo_0-unsplash-resize_to_fill-400x400.jpg";
+    let img2 =
+        "tests/images/dir1/dir2/alex-plesovskich-MHlxTsw5aKY-unsplash-resize_to_fill-400x400.jpg";
     if file_exists(img1) {
         remove_file(img1).unwrap();
     }
