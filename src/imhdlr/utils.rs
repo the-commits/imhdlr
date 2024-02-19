@@ -99,11 +99,11 @@ pub fn process_squeeze_and_crop(
     new_width: u32,
     new_height: u32,
     verbose: bool,
-) -> io::Result<()> {
+) {
     if let Ok(reader) = ImageReader::open(&image_path) {
         if let Ok(image) = reader.decode() {
             let (width, height) = image.dimensions();
-            let scale_factor = if width > height {
+            let scale_factor = if width < height {
                 new_width as f32 / width as f32
             } else {
                 new_height as f32 / height as f32
@@ -138,7 +138,6 @@ pub fn process_squeeze_and_crop(
             }
         }
     }
-    Ok(())
 }
 
 fn rename_image(file_path: &str, resize_width: u32, resize_height: u32) -> String {
