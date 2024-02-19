@@ -71,7 +71,12 @@ pub fn process_squeeze(
     Ok(())
 }
 
-pub fn process_crop(path: PathBuf, resize_width: u32, resize_height: u32, verbose: bool) {
+pub fn process_crop(
+    path: PathBuf,
+    resize_width: u32,
+    resize_height: u32,
+    verbose: bool,
+) -> io::Result<()> {
     if let Ok(reader) = ImageReader::open(&path) {
         if let Ok(mut image) = reader.decode() {
             let subimg = imageops::crop(&mut image, 0, 0, resize_width, resize_height);
@@ -92,6 +97,7 @@ pub fn process_crop(path: PathBuf, resize_width: u32, resize_height: u32, verbos
             }
         }
     }
+    Ok(())
 }
 
 pub fn process_squeeze_and_crop(
@@ -99,7 +105,7 @@ pub fn process_squeeze_and_crop(
     new_width: u32,
     new_height: u32,
     verbose: bool,
-) {
+) -> io::Result<()> {
     if let Ok(reader) = ImageReader::open(&image_path) {
         if let Ok(image) = reader.decode() {
             let (width, height) = image.dimensions();
@@ -138,6 +144,8 @@ pub fn process_squeeze_and_crop(
             }
         }
     }
+
+    Ok(())
 }
 
 fn rename_image(file_path: &str, resize_width: u32, resize_height: u32) -> String {
