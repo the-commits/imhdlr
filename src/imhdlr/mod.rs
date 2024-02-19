@@ -2,6 +2,7 @@ use ext_php_rs::prelude::*;
 use rayon::{iter::ParallelIterator, prelude::IntoParallelIterator};
 
 mod utils;
+use self::utils::process_squeeze_and_crop;
 use crate::imhdlr::utils::{get_images, process_crop, process_squeeze};
 
 #[php_function]
@@ -26,10 +27,19 @@ pub fn imhdlr_squeeze(dir: &str, resize_width: u32, resize_height: u32, verbose:
 }
 
 #[php_function]
-pub fn imhdlr_crop(dir: &str, resize_width: u32, resize_height: u32) {
+pub fn imhdlr_crop(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
     for images in get_images(dir) {
         images.into_par_iter().for_each(move |image| {
-            process_crop(image, resize_width, resize_height);
+            process_crop(image, resize_width, resize_height, verbose);
+        });
+    }
+}
+
+#[php_function]
+pub fn imhdlr_squeeze_and_crop(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
+    for images in get_images(dir) {
+        images.into_par_iter().for_each(move |image| {
+            process_squeeze_and_crop(image, resize_width, resize_height, verbose);
         });
     }
 }
