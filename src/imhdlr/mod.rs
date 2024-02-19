@@ -2,8 +2,9 @@ use ext_php_rs::prelude::*;
 use rayon::{iter::ParallelIterator, prelude::IntoParallelIterator};
 
 mod utils;
-use self::utils::process_squeeze_and_crop;
-use crate::imhdlr::utils::{get_images, process_crop, process_squeeze};
+use crate::imhdlr::utils::{
+    get_images, process_crop, process_resize_exact, process_resize_to_fill_crop,
+};
 
 #[php_function]
 pub fn imhdlr_get(dir: &str) -> Vec<String> {
@@ -16,10 +17,10 @@ pub fn imhdlr_get(dir: &str) -> Vec<String> {
 }
 
 #[php_function]
-pub fn imhdlr_squeeze(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
+pub fn imhdlr_resize_exact(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
     for images in get_images(dir) {
         images.into_par_iter().for_each(move |image| {
-            if let Err(e) = process_squeeze(image, resize_width, resize_height, verbose) {
+            if let Err(e) = process_resize_exact(image, resize_width, resize_height, verbose) {
                 eprintln!("Error processing image: {:?}", e);
             }
         });
@@ -36,10 +37,10 @@ pub fn imhdlr_crop(dir: &str, resize_width: u32, resize_height: u32, verbose: bo
 }
 
 #[php_function]
-pub fn imhdlr_squeeze_and_crop(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
+pub fn imhdlr_resize_to_fill_crop(dir: &str, resize_width: u32, resize_height: u32, verbose: bool) {
     for images in get_images(dir) {
         images.into_par_iter().for_each(move |image| {
-            process_squeeze_and_crop(image, resize_width, resize_height, verbose);
+            process_resize_to_fill_crop(image, resize_width, resize_height, verbose);
         });
     }
 }

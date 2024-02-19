@@ -34,7 +34,7 @@ fn it_imhdlr_crop() {
 }
 
 #[test]
-fn it_imhdlr_squeeze() {
+fn it_imhdlr_resize_exact() {
     let img1 = "tests/images/dir1/annie-spratt-6wd1f4Zjo_0-unsplash-400x400.jpg";
     let img2 = "tests/images/dir1/dir2/alex-plesovskich-MHlxTsw5aKY-unsplash-400x400.jpg";
     if file_exists(img1) {
@@ -43,13 +43,13 @@ fn it_imhdlr_squeeze() {
     if file_exists(img2) {
         remove_file(img2).unwrap();
     }
-    imhdlr_squeeze("tests/images/", 400, 400, true);
+    imhdlr_resize_exact("tests/images/", 400, 400, true);
     assert!(Path::new(img1).exists(), "File {} does not exist", img1);
     assert!(Path::new(img2).exists(), "File {} does not exist", img2);
 }
 
 #[test]
-fn it_imhdlr_squeeze_crop() {
+fn it_imhdlr_resize_to_fill_crop() {
     let img1 = "tests/images/dir1/annie-spratt-6wd1f4Zjo_0-unsplash-crop-400x400.jpg";
     let img2 = "tests/images/dir1/dir2/alex-plesovskich-MHlxTsw5aKY-unsplash-crop-400x400.jpg";
     if file_exists(img1) {
@@ -58,7 +58,7 @@ fn it_imhdlr_squeeze_crop() {
     if file_exists(img2) {
         remove_file(img2).unwrap();
     }
-    imhdlr_squeeze_and_crop("tests/images/", 400, 400, true);
+    imhdlr_resize_to_fill_crop("tests/images/", 400, 400, true);
     assert!(Path::new(img1).exists(), "File {} does not exist", img1);
     assert!(Path::new(img2).exists(), "File {} does not exist", img2);
 }
