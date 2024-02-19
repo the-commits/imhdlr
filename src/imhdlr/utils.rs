@@ -1,15 +1,8 @@
-use ext_php_rs::props::Prop;
-use fast_image_resize as fr;
-use fast_image_resize::{DifferentTypesOfPixelsError, DynamicImageView, Image};
 use glob::glob;
 use image::io::Reader as ImageReader;
-use image::{imageops, GenericImageView, ImageBuffer, ImageResult, Rgba};
-use regex::Regex;
-use std::fs::{create_dir_all, rename};
+use image::{imageops, GenericImageView};
 use std::io;
-use std::num::NonZeroU32;
 use std::path::PathBuf;
-use std::process::exit;
 
 const FILE_EXTENSIONS: [&str; 10] = [
     ".jpg", ".jpeg", ".gif", ".png", ".avif", ".bmp", ".ico", ".tga", ".tiff", ".webp",
@@ -78,7 +71,7 @@ pub fn process_squeeze(
     Ok(())
 }
 
-pub fn process_crop(path: PathBuf, resize_width: u32, resize_height: u32) {
+pub fn process_crop(path: PathBuf, resize_width: u32, resize_height: u32, verbose: bool) {
     if let Ok(reader) = ImageReader::open(&path) {
         if let Ok(mut image) = reader.decode() {
             let subimg = imageops::crop(&mut image, 0, 0, resize_width, resize_height);
@@ -87,9 +80,65 @@ pub fn process_crop(path: PathBuf, resize_width: u32, resize_height: u32) {
                 resize_width,
                 resize_height,
             ));
-            subimg.to_image().save(output_path).unwrap();
+            match subimg.to_image().save(output_path.clone()) {
+                Ok(()) => {
+                    if verbose {
+                        println!("{} saved", output_path.display());
+                    }
+                }
+                Err(e) => {
+                    eprintln!("An error occurred when saving. {}", e);
+                }
+            }
         }
     }
+}
+
+pub fn process_squeeze_and_crop(
+    image_path: PathBuf,
+    new_width: u32,
+    new_height: u32,
+    verbose: bool,
+) -> io::Result<()> {
+    if let Ok(reader) = ImageReader::open(&image_path) {
+        if let Ok(image) = reader.decode() {
+            let (width, height) = image.dimensions();
+            let scale_factor = if width > height {
+                new_width as f32 / width as f32
+            } else {
+                new_height as f32 / height as f32
+            };
+
+            let resized_width = (width as f32 * scale_factor) as u32;
+            let resized_height = (height as f32 * scale_factor) as u32;
+            let mut resized_image = image.resize_exact(
+                resized_width,
+                resized_height,
+                image::imageops::FilterType::Lanczos3,
+            );
+            let crop_width = new_width.min(resized_width);
+            let crop_height = new_height.min(resized_height);
+            let left = (resized_width - crop_width) / 2;
+            let top = (resized_height - crop_height) / 2;
+            let cropped_image = resized_image.crop(left, top, crop_width, crop_height);
+            let output_path = image_path.with_file_name(rename_image(
+                image_path.file_name().unwrap().to_str().unwrap(),
+                new_width,
+                new_height,
+            ));
+            match cropped_image.save(output_path.clone()) {
+                Ok(()) => {
+                    if verbose {
+                        println!("{} saved", output_path.display());
+                    }
+                }
+                Err(e) => {
+                    eprintln!("An error occurred when saving. {}", e);
+                }
+            }
+        }
+    }
+    Ok(())
 }
 
 fn rename_image(file_path: &str, resize_width: u32, resize_height: u32) -> String {
