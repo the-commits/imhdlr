@@ -7,7 +7,7 @@
 `export PHP_CONFIG=$(which php-config)`
 
 # Linux 
-php -d extension=target/release/libimhdlr.dylib ./php-examples/test.php
+php -d extension=target/release/libimhdlr.so ./php-examples/test.php
 # MacOs
 php -d extension=target/release/libimhdlr.dylib ./php-examples/test.php
 # Windows
