@@ -2,12 +2,20 @@ use glob::glob;
 use image::imageops::FilterType;
 use image::GenericImageView;
 use regex::Regex;
+use std::fs::create_dir_all;
 use std::io;
 use std::path::PathBuf;
 
 const FILE_EXTENSIONS: [&str; 10] = [
     ".jpg", ".jpeg", ".gif", ".png", ".avif", ".bmp", ".ico", ".tga", ".tiff", ".webp",
 ];
+
+pub fn create_dirs(dir: &str) {
+    match create_dir_all(dir) {
+        Err(why) => println!("! {:?}", why.kind()),
+        Ok(_) => {}
+    }
+}
 
 pub fn get_images(dir: &str) -> Vec<Vec<PathBuf>> {
     glob_images(remove_suffix(dir, '/').to_owned() + "/**/*")
@@ -39,7 +47,13 @@ pub fn glob_images(dir: String) -> Vec<Vec<PathBuf>> {
     directories
 }
 
-pub fn process_image(path: PathBuf, resize_width: u32, resize_height: u32, skip_names_with_dimensions: bool, verbose: bool) -> io::Result<()> {
+pub fn process_image(
+    path: PathBuf,
+    resize_width: u32,
+    resize_height: u32,
+    skip_names_with_dimensions: bool,
+    verbose: bool,
+) -> io::Result<()> {
     let img = match image::open(&path) {
         Ok(img) => img,
         Err(e) => {
@@ -82,7 +96,12 @@ pub fn process_image(path: PathBuf, resize_width: u32, resize_height: u32, skip_
     Ok(())
 }
 
-fn rename_image(file_path: String, resize_width: u32, resize_height: u32, verbose: bool) -> Option<String> {
+fn rename_image(
+    file_path: String,
+    resize_width: u32,
+    resize_height: u32,
+    verbose: bool,
+) -> Option<String> {
     let path_split: Vec<&str> = file_path.rsplitn(2, '/').collect();
     let file_name_split: Vec<&str> = path_split[0].rsplitn(2, '.').collect();
     let re = Regex::new("-\\d+x\\d+").unwrap();
