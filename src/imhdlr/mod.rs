@@ -1,13 +1,29 @@
 use ext_php_rs::prelude::*;
+use rayon::{prelude::IntoParallelIterator, iter::ParallelIterator};
 
 mod utils;
-use utils::{glob_images, remove_suffix};
+use crate::imhdlr::utils::{get_images, process_image};
 
 #[php_function]
 pub fn imhdlr_get_images(dir: &str) -> Vec<String> {
-    let directory_with_images = remove_suffix(dir, '/').to_owned() + "/**/*";
-    let images = glob_images(directory_with_images);
-    images.into_iter().flatten().map(|path| path.to_string_lossy().into_owned()).collect()
+    let images = get_images(dir);
+    images
+        .into_iter()
+        .flatten()
+        .map(|path| path.to_string_lossy().into_owned())
+        .collect()
+}
+
+#[php_function]
+pub fn imhdlr_resize_images(dir: &str, resize_width: u32, resize_height: u32, skip_names_with_dimensions: bool, verbose: bool) {
+    for images in get_images(dir) {
+
+        images.into_par_iter().for_each(move |image| {
+            if let Err(e) = process_image(image, resize_width, resize_height, skip_names_with_dimensions, verbose) {
+                eprintln!("Error processing image: {:?}", e);
+            }
+        });
+    }
 }
 
 #[php_module]
