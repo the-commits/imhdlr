@@ -14,7 +14,7 @@ fn it_remove_suffix() {
 fn it_imhdlr_get_images() {
     create_dirs("tests_images/dir1/dir2/dir3");
     create_image("tests_images/dir1/dir2/dir3/image.png");
-    let images = imhdlr_get_images("tests_images/");
+    let images = imhdlr_get("tests_images/");
     assert_eq!(&images[0], "tests_images/dir1/dir2/dir3/image.png");
     cleanup("tests_images");
 }
@@ -25,7 +25,7 @@ fn it_imhdlr_resize_images() {
     let img2 = "tests/images/dir1/dir2/alex-plesovskich-MHlxTsw5aKY-unsplash-30x30.jpg";
     remove_file(img1).unwrap();
     remove_file(img2).unwrap();
-    imhdlr_resize_images("tests/images/", 30, 30, true, true);
+    imhdlr_squeeze("tests/images/", 30, 30, true, true);
     assert!(Path::new(img1).exists(), "File {} does not exist", img1);
     assert!(Path::new(img2).exists(), "File {} does not exist", img2);
 }
